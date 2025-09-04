@@ -1,0 +1,13 @@
+{
+    "Score when destroyed":	150,
+    "Energy given when destroyed":	5,
+    "XP gained when destroyed":	1,
+    "Earliest Appearance": 1,
+    "Wave Arrival Speed":500,
+    "Hover Speed":[120,60],
+    "type":  {
+        "Unprotected" : 5,
+        "Shielded" : {"HP Shield":2 ,"HP Body":3},
+        "Armored" : 4 
+    }
+}

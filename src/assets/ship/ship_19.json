@@ -1,0 +1,12 @@
+{
+        "shipID": 19,
+        "shipName": "Phoenix",
+        "shipImage": "ship_19.png",
+        "shipAffinity": "Shield Breaking",
+        "MainWeapon": "Helix Cannon",
+        "Aura":"Bullet EMP",
+        "Zen": "Personal Shield",
+        "Rarity": "Rare",
+        "Price": 1500
+
+}
