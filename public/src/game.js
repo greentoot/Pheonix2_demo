@@ -31,7 +31,7 @@
   // Game state
   let running = true;
   let score = 0;
-  let lives = 3;
+  let lives = 1;
 
   const player = {
     x: W/2, y: H-80, w: 40, h: 40,
@@ -57,7 +57,7 @@
   });
 
   function reset(){
-    score = 0; lives = 3;
+    score = 0; lives = 1;
     bullets.length = 0; enemies.length = 0; enemyBullets.length = 0;
     player.x = W/2; player.y = H-80; player.fireCooldown = 0;
 
