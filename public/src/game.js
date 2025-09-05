@@ -71,7 +71,6 @@
     player.x = W/2; player.y = H-80; player.fireCooldown = 0;
     running = true;
     currentWave = 1;
-    overlay.style.visibility = "hidden";
     spawnWave(currentWave);
   }
 
@@ -188,7 +187,6 @@
         spawnWave(currentWave);
       } else {
         running = false;
-        showOverlay("Mission terminée !");
       }
     }
 
@@ -201,18 +199,12 @@
 
     if(lives <= 0){ 
       running = false; 
-      showOverlay("Game Over"); 
     }
   }
 
   function hitPlayer(){
     lives -= 1;
     blinkTime = 0.8;
-  }
-
-  function showOverlay(msg){
-    overlayText.textContent = msg;
-    overlay.style.visibility = "visible";
   }
 
   let blinkTime = 0;
