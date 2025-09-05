@@ -26,7 +26,7 @@
 
   // Charger sprites
   const shipImg = await loadImage('./src/assets/ship/ship_19.png');
-  const enemyImg = await loadImage('./src/assets/enemies/sparrows_unprotected.png');
+  const enemyImg = await loadImage('./src/assets/enemies/sparrows/sparrows_unprotected.png');
   const bulletImg = await loadImage('./src/assets/bullets/bullet.png');
 
   // État du jeu
