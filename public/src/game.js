@@ -25,13 +25,17 @@
   }
   const shipImg = await loadImage('./src/assets/ship/' + shipInfo.shipImage);
   const enemyImg = await loadImage('./src/assets/enemies/sparrows/sparrows_unprotected.png');
-  const bulletImg = await loadImage('./src/assets/enemies/bullets.png'); // 🔹 nouveau sprite bullet
+  const bulletImg = await loadImage('./src/assets/bullets/bullet.png');
   const statsparrows = await loadJSON('./src/assets/enemies/sparrows/data.json');
 
   // Game state
   let running = true;
   let score = 0;
   let lives = 1;
+
+  let currentWave = 1;
+  const maxWaves = 10;
+  let waveInProgress = false;
 
   const player = {
     x: W/2, y: H-80, w: 40, h: 40,
@@ -43,7 +47,6 @@
   const bullets = [];
   const enemies = [];
   const enemyBullets = [];
-  let spawnTimer = 0;
 
   restartBtn.addEventListener('click', ()=>reset());
 
@@ -60,24 +63,27 @@
     bullets.length = 0; enemies.length = 0; enemyBullets.length = 0;
     player.x = W/2; player.y = H-80; player.fireCooldown = 0;
     running = true;
+    currentWave = 1;
+    waveInProgress = false;
   }
 
   function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
   function spawnWave(){
-    const count = 6 + Math.floor(Math.random()*4);
+    const count = currentWave; // nombre d'ennemis = numéro de vague
     const baseY = -40;
     for(let i=0;i<count;i++){
       const x = 60 + i * ((W-120)/count);
-      const y = baseY - i*10;
+      const y = baseY - i*20;
       enemies.push({ 
         x, y, 
         w: 72, h: 72, hp: 3, 
-        vx: (Math.random()<0.5?-30:30), // 🔹 léger mouvement horizontal
-        vy: 60 + Math.random()*30, 
+        vx: (Math.random()<0.5?-30:30),
+        vy: 60 + Math.random()*20, 
         fire: Math.random()*1.5 + .5 
       });
     }
+    waveInProgress = true;
   }
 
   function shoot(){
@@ -98,11 +104,10 @@
   }
 
   function update(dt){
-    // clamp player
     player.x = clamp(player.x, 24, W-24);
     player.y = clamp(player.y, 24, H-24);
 
-    // 🔫 tir auto
+    // Tir auto
     player.fireCooldown -= dt;
     if(player.fireCooldown <= 0){
       shoot();
@@ -115,11 +120,9 @@
     for(let i=bullets.length-1;i>=0;i--) if(bullets[i].y < -20) bullets.splice(i,1);
     for(let i=enemyBullets.length-1;i>=0;i--) if(enemyBullets[i].y > H+20) enemyBullets.splice(i,1);
 
-    // Spawn enemies
-    spawnTimer -= dt;
-    if(spawnTimer <= 0){
+    // Spawn wave si pas en cours
+    if(!waveInProgress && currentWave <= maxWaves){
       spawnWave();
-      spawnTimer = 2.5;
     }
 
     // Update enemies
@@ -127,7 +130,6 @@
       e.x += e.vx*dt; 
       e.y += e.vy*dt;
 
-      // rebond horizontal
       if(e.x < e.w/2 || e.x > W-e.w/2) e.vx *= -1;
 
       e.fire -= dt;
@@ -136,21 +138,10 @@
         e.fire = Math.random()*1.5 + .5;
       }
     }
+
     for(let i=enemies.length-1;i>=0;i--) if(enemies[i].y > H+40) enemies.splice(i,1);
 
-    // 🔹 éviter collisions ennemies
-    for (let i=0;i<enemies.length;i++){
-      for (let j=i+1;j<enemies.length;j++){
-        const e1=enemies[i], e2=enemies[j];
-        if (Math.abs(e1.x-e2.x)<(e1.w/2+e2.w/2) &&
-            Math.abs(e1.y-e2.y)<(e1.h/2+e2.h/2)) {
-          if (e1.x<e2.x){ e1.x-=5; e2.x+=5; }
-          else { e1.x+=5; e2.x-=5; }
-        }
-      }
-    }
-
-    // Collisions
+    // Collisions bullets -> enemies
     for(let i=enemies.length-1;i>=0;i--){
       const e = enemies[i];
       for(let j=bullets.length-1;j>=0;j--){
@@ -167,6 +158,7 @@
       }
     }
 
+    // Collisions player
     const playerBox = {x:player.x, y:player.y, w:28, h:28};
     for(let i=enemyBullets.length-1;i>=0;i--){
       const b = enemyBullets[i];
@@ -180,6 +172,15 @@
       if(aabb(playerBox, e)){
         enemies.splice(i,1);
         hitPlayer();
+      }
+    }
+
+    // Vague terminée
+    if(waveInProgress && enemies.length === 0){
+      waveInProgress = false;
+      currentWave++;
+      if(currentWave > maxWaves){
+        running = false; // victoire
       }
     }
 
@@ -209,7 +210,7 @@
       drawShip(player.x, player.y);
     }
 
-    // 🔹 Dessin des balles avec sprite
+    // Bullets
     for(const b of bullets){
       ctx.drawImage(bulletImg, b.x-8, b.y-16, 16, 32);
     }
@@ -230,7 +231,11 @@
       ctx.fillStyle = '#e6e6e6';
       ctx.textAlign = 'center';
       ctx.font = 'bold 28px system-ui, -apple-system, Segoe UI, Roboto, Arial';
-      ctx.fillText('Game Over', W/2, H/2 - 10);
+      if(lives <= 0){
+        ctx.fillText('Game Over', W/2, H/2 - 10);
+      } else {
+        ctx.fillText('Victoire !', W/2, H/2 - 10);
+      }
       ctx.font = '16px system-ui, -apple-system, Segoe UI, Roboto, Arial';
       ctx.fillText('Appuie sur "Recommencer"', W/2, H/2 + 20);
     }
