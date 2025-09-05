@@ -1,107 +1,105 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Phoenix II Demo</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: #02040a;
-      color: #e6e6e6;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      height: 100%;
-      overflow: hidden;
-    }
-    #game {
-      display: block;
-      margin: auto;
-      background: #050814;
-      width: 100vw;
-      height: 100vh;
-    }
-    /* HUD général */
-    .hud {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      pointer-events: none;
-      font-size: 14px;
-      color: #6dd5ff;
-    }
-    .hud .top-right {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      text-align: right;
-    }
-    .hud .bottom-right {
-      position: absolute;
-      bottom: 30px;
-      right: 30px;
-      text-align: right;
-      font-size: 13px;
-      color: #8ac6ff;
-    }
-    .hud .bottom-left {
-      position: absolute;
-      bottom: 30px;
-      left: 30px;
-      text-align: left;
-      font-size: 13px;
-      color: #8ac6ff;
-    }
-    /* Overlay pause / game over */
-    .overlay {
-      position: absolute;
-      top:0; left:0; right:0; bottom:0;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 24px;
-      text-align: center;
-      visibility: hidden;
-    }
-    .overlay button {
-      margin-top: 20px;
-      padding: 12px 30px;
-      font-size: 16px;
-      font-weight: bold;
-      color: white;
-      background: #ff1744;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      pointer-events: auto;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Phoenix II Demo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; font-family: Arial, sans-serif; background: #2a2a2a; }
+
+  #ui {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    color: white;
+  }
+
+  /* --- Zone Gauche --- */
+  #ui-left {
+    width: 30%;
+    background: linear-gradient(#1d2b1f, #2f3a2e);
+    padding: 20px;
+  }
+  #ui-left h2 { margin: 0; font-size: 18px; }
+  #ui-left .level { color: #bbb; margin: 5px 0 15px; }
+  #ui-left h3 { margin-top: 10px; font-size: 16px; color: #ff5555; }
+  .progress-bar { width: 100%; height: 12px; background: #440000; margin: 10px 0; border-radius: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; background: red; }
+  .actions img { width: 40px; height: 40px; margin: 5px; background: rgba(255,255,255,0.1); border-radius: 6px; }
+  .equipment { margin-top: 20px; font-size: 14px; }
+  .equipment p { margin: 4px 0; }
+  .blocked { color: red; }
+
+  /* --- Zone Centrale --- */
+  #ui-center {
+    width: 40%;
+    background: rgba(0,10,30,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #ui-center canvas {
+    background: #050814;
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+  }
+
+  /* --- Zone Droite --- */
+  #ui-right {
+    width: 30%;
+    background: linear-gradient(#0d1a2b, #12263d);
+    padding: 20px;
+    color: #8acaff;
+  }
+  #ui-right h1 { margin: 0; font-size: 36px; color: #00aaff; }
+  .stats-row { display: flex; justify-content: space-between; margin: 5px 0; }
+  #progression { margin-top: 30px; color: #33aaff; }
+  #difficulty { color: #aaccee; }
+</style>
 </head>
 <body>
-  <canvas id="game" width="480" height="720"></canvas>
-  
-  <div class="hud">
-    <div class="top-right">
-      <div><b>SCORE</b>: <span id="score">0</span></div>
-      <div><b>PROJECTILES</b>: <span id="projectiles">0</span> / <span id="maxProjectiles">6</span></div>
+<div id="ui">
+  <!-- Zone Gauche -->
+  <div id="ui-left">
+    <h2>ENSEIGNE LOISEAUG8</h2>
+    <p class="level">LVL 14</p>
+    <h3>MISSION DE CAMPAGNE #17</h3>
+    <div class="progress-bar"><div class="progress-fill" style="width:15%"></div></div>
+    <div class="actions">
+      <img src="./icons/shield.png" alt="Bouclier">
+      <img src="./icons/laser.png" alt="Laser">
+      <img src="./icons/mirv.png" alt="MIRV">
+      <img src="./icons/condor.png" alt="Condor">
     </div>
-    <div class="bottom-right">
-      <div><b>PROGRESSION</b>: Acte <span id="act">1</span>, Vague <span id="wave">1</span></div>
-      <div><b>DIFFICULTÉ DE VAGUE</b>: <span id="difficulty">1</span></div>
+    <div class="equipment">
+      <p><b>CANON HÉLIX</b> – Arme principale</p>
+      <p><b>MUNITION EMP</b> – Munitions</p>
+      <p><b>BOUCLIER PERSONNEL</b> – État : <span class="blocked">Bloqué</span></p>
     </div>
-    <div class="bottom-left">
-      <div><b>PHOENIX</b></div>
-      <div id="shipName">Canon Hélix</div>
-      <div id="weaponName">Arme</div>
-    </div>
-  </div>
-  
-  <div class="overlay" id="overlay">
-    <div id="overlayText">EN PAUSE</div>
-    <button id="restart">REPRENDRE</button>
   </div>
 
-  <script src="./src/game.js"></script>
+  <!-- Zone Centrale -->
+  <div id="ui-center">
+    <canvas id="game" width="800" height="600"></canvas>
+  </div>
+
+  <!-- Zone Droite -->
+  <div id="ui-right">
+    <h1 id="score">1150</h1>
+    <div class="stats-row">
+      <span id="time">00:07.80</span>
+      <span id="delta">-00:00.32</span>
+    </div>
+    <div class="stats-row">
+      <span id="projectiles">24/24</span>
+      <span id="froles">Frôlés : 1</span>
+    </div>
+    <h3 id="progression">ACTE 1, VAGUE 4</h3>
+    <p id="difficulty">Difficulté : 48</p>
+  </div>
+</div>
+
+<script src="./src/game.js"></script>
 </body>
 </html>
