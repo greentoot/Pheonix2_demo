@@ -1,126 +1,107 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Phoenix 2</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <title>Phoenix II Demo</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background: #0b0f1a;
+      background: #02040a;
       color: #e6e6e6;
-      font-family: "Sofia Sans";
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
       height: 100%;
+      overflow: hidden;
     }
-    
-    header {
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:10px 16px;
-      background:#0f1526;
-      border-bottom:1px solid #1c2744;
-      position:sticky;
-      top:0;
-      z-index:2;
-    }
-    
-    header .dot {
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      background:#39d353;
-      box-shadow:0 0 8px #39d353;
-    }
-    
-    header h1 {
-      font-size:16px;
-      margin:0;
-      font-weight:600;
-      letter-spacing:.3px;
-    }
-    
-    #hud {
-      position:
-        absolute;
-      left: 12px;
-      top: 60px;
-      z-index: 2;
-      background: rgba(15,21,38,0.6);
-      padding:10px 12px;
-      border-radius:10px;
-      border:1px solid #1c2744;
-      backdrop-filter: blur(6px);
-    }
-    
-    #hud b {
-      color:#9cc4ff;
-    }
-    
     #game {
-      display:block;
-      margin:0 auto;
-      background: radial-gradient(ellipse at center, #0d1327 0%, #070a14 70%);
-      box-shadow: 0 0 40px rgba(0,0,0,.45) inset;
+      display: block;
+      margin: auto;
+      background: #050814;
+      width: 100vw;
+      height: 100vh;
     }
-    
-    #footer {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      opacity:.7;
-      font-size:12px;
+    /* HUD général */
+    .hud {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      font-size: 14px;
+      color: #6dd5ff;
     }
-    
-    .btn {
-      appearance:none;
-      border:1px solid #2a3560;
-      background:#131a33;
-      color:#e6e6e6;
-      padding:8px 12px;
-      border-radius:10px;
-      cursor:pointer;
+    .hud .top-right {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      text-align: right;
     }
-    
-    .btn:hover {
-      background:#182144;
+    .hud .bottom-right {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      text-align: right;
+      font-size: 13px;
+      color: #8ac6ff;
     }
-    
-    #controls {
-      position:absolute;
-      right:12px;
-      top:60px;
-      background: rgba(15,21,38,0.6);
-      padding:10px 12px;
-      border-radius:10px;
-      border:1px solid #1c2744;
-      backdrop-filter: blur(6px);
+    .hud .bottom-left {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      text-align: left;
+      font-size: 13px;
+      color: #8ac6ff;
     }
-    
-    code {
-      background:#11162b;
-      padding:2px 6px;
-      border-radius:6px;
-      border:1px solid #202b52;
+    /* Overlay pause / game over */
+    .overlay {
+      position: absolute;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 24px;
+      text-align: center;
+      visibility: hidden;
+    }
+    .overlay button {
+      margin-top: 20px;
+      padding: 12px 30px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      background: #ff1744;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      pointer-events: auto;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="dot"></div>
-    <h1>Phoenix II — mini démo (canvas)</h1>
-    <div style="flex:1"></div>
-    <button class="btn" id="restart">Recommencer</button>
-  </header>
+  <canvas id="game" width="480" height="720"></canvas>
+  
+  <div class="hud">
+    <div class="top-right">
+      <div><b>SCORE</b>: <span id="score">0</span></div>
+      <div><b>PROJECTILES</b>: <span id="projectiles">0</span> / <span id="maxProjectiles">6</span></div>
+    </div>
+    <div class="bottom-right">
+      <div><b>PROGRESSION</b>: Acte <span id="act">1</span>, Vague <span id="wave">1</span></div>
+      <div><b>DIFFICULTÉ DE VAGUE</b>: <span id="difficulty">1</span></div>
+    </div>
+    <div class="bottom-left">
+      <div><b>PHOENIX</b></div>
+      <div id="shipName">Canon Hélix</div>
+      <div id="weaponName">Arme</div>
+    </div>
+  </div>
+  
+  <div class="overlay" id="overlay">
+    <div id="overlayText">EN PAUSE</div>
+    <button id="restart">REPRENDRE</button>
+  </div>
 
-  <div id="hud">Score: <b id="score">0</b> — Vies: <b id="lives">3</b> — Arme: <b id="weaponName">...</b></div>
-  <div id="controls">Contrôles : <code>souris</code>Dash: <code>right click ( pas encore les pouvoir ) </code></div>
-
-  <canvas id="game" width="500" height="820"></canvas>
-  <div id="footer">Assets © • Ce projet est une re-création fanmade pour démo.</div>
-
-  <script src="src/game.js"></script>
+  <script src="./src/game.js"></script>
 </body>
 </html>
