@@ -7,7 +7,7 @@
     "Hover Speed":[120,60],
     "type":  {
         "Unprotected" : 5,
-        "Shielded" : {"HP Shield":2 ,"HP Body":3},
-        "Armored" : 4 
+        "Shielded" : {"HP Shield":2 ,"HP Body":5},
+        "Armored" : {"HP Shield":4 ,"HP Body":5}
     }
 }
