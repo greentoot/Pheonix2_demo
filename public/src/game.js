@@ -25,7 +25,7 @@
   }
   const shipImg = await loadImage('./src/assets/ship/' + shipInfo.shipImage);
   const enemyImg = await loadImage('./src/assets/enemies/sparrows/sparrows_unprotected.png');
-  const bulletImg = await loadImage('./src/assets/bullets/bullet.png');
+  const bulletImg = await loadImage('./src/assets/enemies/bullets.png');
   const statsparrows = await loadJSON('./src/assets/enemies/sparrows/data.json');
 
   // Game state
