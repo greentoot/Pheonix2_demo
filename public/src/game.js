@@ -124,17 +124,7 @@
 
   // --- Game loop ---
   let last = performance.now();
-function loop(ts){
-  const dt = Math.min(0.033, (ts-last)/1000); last = ts;
-  if(running){
-    update(dt);
-    draw();        // ← ton canvas jeu (vaisseau, ennemis, etc.)
-    clearOverlay(); // ← overlay reste vide
-  } else {
-    drawOverlay();  // ← seulement à la fin
-  }
-  requestAnimationFrame(loop);
-}
+function loop(ts){ const dt = Math.min(0.033, (ts-last)/1000); last = ts; if(running){ update(dt); draw(); } requestAnimationFrame(loop); }
 
   function update(dt){
     player.x = clamp(player.x, 24, W-24);
