@@ -13,7 +13,11 @@
     height: 100vh;
     color: white;
   }
-
+  #overlay {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none; /* clics passent au canvas de jeu */
+}
   /* --- Zone Gauche --- */
   #ui-left {
     width: 30%;
@@ -93,6 +97,7 @@
   <!-- Zone Centrale -->
   <div id="ui-center">
     <canvas id="game"></canvas>
+    <canvas id="overlay"></canvas>
   </div>
 
   <!-- Zone Droite -->
