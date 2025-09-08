@@ -7,6 +7,17 @@
   let W = canvas.width;
   let H = canvas.height;
 
+  // --- Overlay ---
+  const overlay = document.getElementById('overlay');
+  const ctxOverlay = overlay.getContext('2d');
+
+  function resizeOverlay() {
+    overlay.width = canvas.width;
+    overlay.height = canvas.height;
+  }
+  window.addEventListener("resize", resizeOverlay);
+  resizeOverlay();
+
   // --- UI Elements ---
   const scoreEl = document.getElementById('score');
   const projectilesEl = document.getElementById('projectiles');
@@ -42,7 +53,7 @@
   // --- Game state ---
   let running = true;
   let score = 0;
-  let lives = 1;
+  let lives = 3; // max 3 vies
 
   let currentWave = 1;
   const maxWaves = 10;
@@ -71,7 +82,7 @@
 
   // --- Reset game ---
   function reset(){
-    score = 0; lives = 1;
+    score = 0; lives = 3;
     bullets.length = 0; enemies.length = 0; enemyBullets.length = 0;
     player.x = W/2; player.y = H-80; player.fireCooldown = 0;
     running = true;
@@ -115,6 +126,7 @@
   function loop(ts){
     const dt = Math.min(0.033, (ts-last)/1000); last = ts;
     if(running){ update(dt); draw(); }
+    drawOverlay(); // overlay par-dessus
     requestAnimationFrame(loop);
   }
 
@@ -249,6 +261,36 @@
     }
   }
 
+  // --- Overlay drawing ---
+  function drawOverlay() {
+    ctxOverlay.clearRect(0, 0, overlay.width, overlay.height);
+
+    // barre de vie
+    const barWidth = 200;
+    const barHeight = 20;
+    const hpPercent = Math.max(0, lives / 3);
+    ctxOverlay.fillStyle = "rgba(0,0,0,0.6)";
+    ctxOverlay.fillRect(20, 20, barWidth, barHeight);
+    ctxOverlay.fillStyle = "lime";
+    ctxOverlay.fillRect(20, 20, barWidth * hpPercent, barHeight);
+
+    // texte
+    ctxOverlay.fillStyle = "white";
+    ctxOverlay.font = "20px Arial";
+    ctxOverlay.fillText("Score: " + score, 20, 60);
+
+    // message fin
+    if (!running) {
+      ctxOverlay.fillStyle = "rgba(0,0,0,0.7)";
+      ctxOverlay.fillRect(0, 0, overlay.width, overlay.height);
+      ctxOverlay.fillStyle = "red";
+      ctxOverlay.font = "40px Arial";
+      ctxOverlay.textAlign = "center";
+      ctxOverlay.fillText("GAME OVER", overlay.width/2, overlay.height/2);
+      ctxOverlay.textAlign = "left";
+    }
+  }
+
   // start
   reset();
   requestAnimationFrame(loop);
@@ -257,6 +299,7 @@
     canvas.height = canvas.parentElement.clientHeight;
     W = canvas.width;
     H = canvas.height;
+    resizeOverlay();
   }
   window.addEventListener("resize", resizeCanvas);
   resizeCanvas();
