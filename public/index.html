@@ -13,11 +13,7 @@
     height: 100vh;
     color: white;
   }
-  #overlay {
-  position: absolute;
-  top: 0; left: 0;
-  pointer-events: none; /* clics passent au canvas de jeu */
-}
+
   /* --- Zone Gauche --- */
   #ui-left {
     width: 30%;
@@ -64,6 +60,30 @@
   .stats-row { display: flex; justify-content: space-between; margin: 5px 0; }
   #progression { margin-top: 30px; color: #33aaff; }
   #difficulty { color: #aaccee; }
+
+  /* game canvas : fond sombre */
+#ui-center canvas#game {
+  background: #050814;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* overlay : au-dessus, transparent, ne capte pas les clics */
+#overlay {
+  position: absolute;
+  inset: 0;               /* top:0; right:0; bottom:0; left:0 */
+  pointer-events: none;   /* clics passent au game */
+  background: transparent;
+  z-index: 10;
+}
+
+/* optionnel : forcer le canvas de jeu en dessous */
+#game {
+  position: relative;
+  z-index: 1;
+}
+
 </style>
 </head>
 <body>
@@ -96,8 +116,8 @@
 
   <!-- Zone Centrale -->
   <div id="ui-center">
-    <canvas id="overlay"></canvas>
     <canvas id="game"></canvas>
+    <canvas id="overlay"></canvas>
   </div>
 
   <!-- Zone Droite -->
