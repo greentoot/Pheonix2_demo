@@ -19,16 +19,18 @@
     width: 30%;
     background: linear-gradient(#1d2b1f, #2f3a2e);
     padding: 20px;
+    overflow-y: auto;
   }
   #ui-left h2 { margin: 0; font-size: 18px; }
   #ui-left .level { color: #bbb; margin: 5px 0 15px; }
   #ui-left h3 { margin-top: 10px; font-size: 16px; color: #ff5555; }
   .progress-bar { width: 100%; height: 12px; background: #440000; margin: 10px 0; border-radius: 6px; overflow: hidden; }
   .progress-fill { height: 100%; background: red; }
-  .actions img { width: 40px; height: 40px; margin: 5px; background: rgba(255,255,255,0.1); border-radius: 6px; }
+  .actions p { margin: 4px 0; }
   .equipment { margin-top: 20px; font-size: 14px; }
   .equipment p { margin: 4px 0; }
   .blocked { color: red; }
+  .equipment img { width: 40px; height: 40px; margin-right: 6px; vertical-align: middle; }
 
   /* --- Zone Centrale --- */
   #ui-center {
@@ -37,6 +39,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
   }
   #ui-center canvas {
     background: #050814;
@@ -51,6 +54,7 @@
     background: linear-gradient(#0d1a2b, #12263d);
     padding: 20px;
     color: #8acaff;
+    overflow-y: auto;
   }
   #ui-right h1 { margin: 0; font-size: 36px; color: #00aaff; }
   .stats-row { display: flex; justify-content: space-between; margin: 5px 0; }
@@ -73,19 +77,22 @@
       <p>Condor</p>
     </div>
     <div class="equipment">
-      <img src="src/icons/shield.png"><p><b>CANON HÉLIX</b> – Hautement efficace contre les boucliers.</p>
+      <p>
+        <img src="src/icons/shield.png" alt="Shield">
+        <b><span id="weaponName">Canon</span></b> – Hautement efficace contre les boucliers.
+      </p>
       <p><b>MUNITION EMP</b> – Munitions</p>
       <p id="shipName"></p>
       <p><b>BOUCLIER PERSONNEL</b> – État : <span class="blocked">Bloqué</span></p>
       <p>Vies : <span id="lives">1</span></p>
-      <p>Arme : <span id="weaponName">Canon</span></p>
+      <p>Arme : </p>
       <button id="restart">Recommencer</button>
     </div>
   </div>
 
   <!-- Zone Centrale -->
   <div id="ui-center">
-    <canvas id="game" ></canvas>
+    <canvas id="game"></canvas>
   </div>
 
   <!-- Zone Droite -->
@@ -99,9 +106,9 @@
       <span id="projectiles">0</span>
       <span id="froles">Frôlés : 1</span>
     </div>
-    <h3 id="wave">ACTE 1, VAGUE 4</h3>
-    <h2 id = "act">ACTE 1</h2>
-    <p id="difficulty">Difficulté : 48</p>
+    <h3 id="wave">VAGUE 1</h3>
+    <h2 id="act">ACTE 1</h2>
+    <p id="difficulty">Difficulté : 2</p>
   </div>
 </div>
 

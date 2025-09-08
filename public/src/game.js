@@ -7,16 +7,16 @@
   let W = canvas.width;
   let H = canvas.height;
 
-
   // --- UI Elements ---
-  const scoreEl = document.getElementById('score'); //valid
-  const projectilesEl = document.getElementById('projectiles'); //valid
-  const waveEl = document.getElementById('wave');//valid
-  const difficultyEl = document.getElementById('difficulty');//valid
-  const actEl = document.getElementById('act');//valid
-  const weaponNameEl = document.getElementById('weaponName');//vlaid
+  const scoreEl = document.getElementById('score');
+  const projectilesEl = document.getElementById('projectiles');
+  const waveEl = document.getElementById('wave');
+  const difficultyEl = document.getElementById('difficulty');
+  const actEl = document.getElementById('act');
+  const weaponNameEl = document.getElementById('weaponName');
   const shipNameEl = document.getElementById('shipName');
   const restartBtn = document.getElementById('restart');
+  const livesEl = document.getElementById('lives');
 
   // --- Load JSON helper ---
   async function loadJSON(path){ const res = await fetch(path); return await res.json(); }
@@ -84,7 +84,7 @@
   // --- Spawning waves ---
   function spawnWave(wave){
     enemies.length = 0;
-    const count = wave; // nombre d’ennemis = numéro de la vague
+    const count = wave;
     const baseY = -40;
     for(let i=0;i<count;i++){
       const x = 80 + i * ((W-160)/count);
@@ -119,30 +119,24 @@
   }
 
   function update(dt){
-    // clamp player
     player.x = clamp(player.x, 24, W-24);
     player.y = clamp(player.y, 24, H-24);
 
-    // 🔫 tir auto
     player.fireCooldown -= dt;
     if(player.fireCooldown <= 0){
       shoot();
       player.fireCooldown = player.fireDelay;
     }
 
-    // Bullets
     for(const b of bullets){ b.y += b.vy*dt; }
     for(const b of enemyBullets){ b.y += b.vy*dt; }
     for(let i=bullets.length-1;i>=0;i--) if(bullets[i].y < -20) bullets.splice(i,1);
     for(let i=enemyBullets.length-1;i>=0;i--) if(enemyBullets[i].y > H+20) enemyBullets.splice(i,1);
 
-    // Update enemies
     for(const e of enemies){
       e.x += e.vx*dt; 
       e.y += e.vy*dt;
-
       if(e.x < e.w/2 || e.x > W-e.w/2) e.vx *= -1;
-
       e.fire -= dt;
       if(e.fire <= 0){
         enemyShoot(e);
@@ -151,7 +145,6 @@
     }
     for(let i=enemies.length-1;i>=0;i--) if(enemies[i].y > H+40) enemies.splice(i,1);
 
-    // Collisions bullets vs enemies
     for(let i=enemies.length-1;i>=0;i--){
       const e = enemies[i];
       for(let j=bullets.length-1;j>=0;j--){
@@ -168,7 +161,6 @@
       }
     }
 
-    // Collisions with player
     const playerBox = {x:player.x, y:player.y, w:28, h:28};
     for(let i=enemyBullets.length-1;i>=0;i--){
       const b = enemyBullets[i];
@@ -185,7 +177,6 @@
       }
     }
 
-    // --- Wave progression ---
     if(enemies.length === 0){
       currentWave++;
       if(currentWave <= maxWaves){
@@ -198,9 +189,10 @@
     // --- Update HUD ---
     scoreEl.textContent = score;
     projectilesEl.textContent = bullets.length;
-    waveEl.textContent = currentWave;
-    difficultyEl.textContent = currentWave * 2;
-    actEl.textContent = 1;
+    waveEl.textContent = "VAGUE " + currentWave;
+    difficultyEl.textContent = "Difficulté : " + (currentWave * 2);
+    actEl.textContent = "ACTE 1";
+    livesEl.textContent = lives;
 
     if(lives <= 0){ 
       running = false; 
@@ -261,13 +253,11 @@
   reset();
   requestAnimationFrame(loop);
   function resizeCanvas() {
-  canvas.width = canvas.parentElement.clientWidth;
-  canvas.height = canvas.parentElement.clientHeight;
-  W = canvas.width;
-  H = canvas.height;
-}
-
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas(); // appel initial
-
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = canvas.parentElement.clientHeight;
+    W = canvas.width;
+    H = canvas.height;
+  }
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
 })();
