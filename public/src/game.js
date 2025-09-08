@@ -124,12 +124,17 @@
 
   // --- Game loop ---
   let last = performance.now();
-  function loop(ts){
-    const dt = Math.min(0.033, (ts-last)/1000); last = ts;
-    if(running){ update(dt); draw(); }
-    else { drawOverlay(); } // 👈 overlay seulement si game over
-    requestAnimationFrame(loop);
+function loop(ts){
+  const dt = Math.min(0.033, (ts-last)/1000); last = ts;
+  if(running){
+    update(dt);
+    draw();        // ← ton canvas jeu (vaisseau, ennemis, etc.)
+    clearOverlay(); // ← overlay reste vide
+  } else {
+    drawOverlay();  // ← seulement à la fin
   }
+  requestAnimationFrame(loop);
+}
 
   function update(dt){
     player.x = clamp(player.x, 24, W-24);
@@ -267,26 +272,25 @@
     ctxOverlay.clearRect(0, 0, overlay.width, overlay.height);
   }
 
-  function drawOverlay() {
-    ctxOverlay.clearRect(0, 0, overlay.width, overlay.height);
+function drawOverlay() {
+  ctxOverlay.clearRect(0, 0, overlay.width, overlay.height);
 
-    ctxOverlay.fillStyle = "rgba(0,0,0,0.7)";
-    ctxOverlay.fillRect(0, 0, overlay.width, overlay.height);
+  ctxOverlay.fillStyle = "rgba(0,0,0,0.7)";
+  ctxOverlay.fillRect(0, 0, overlay.width, overlay.height);
 
-    ctxOverlay.fillStyle = "red";
-    ctxOverlay.font = "40px Arial";
-    ctxOverlay.textAlign = "center";
-    ctxOverlay.fillText("GAME OVER", overlay.width/2, overlay.height/2 - 40);
+  ctxOverlay.fillStyle = "red";
+  ctxOverlay.font = "40px Arial";
+  ctxOverlay.textAlign = "center";
+  ctxOverlay.fillText("GAME OVER", overlay.width/2, overlay.height/2 - 40);
 
-    ctxOverlay.fillStyle = "white";
-    ctxOverlay.font = "24px Arial";
-    ctxOverlay.fillText("Score final : " + score, overlay.width/2, overlay.height/2);
+  ctxOverlay.fillStyle = "white";
+  ctxOverlay.font = "24px Arial";
+  ctxOverlay.fillText("Score final : " + score, overlay.width/2, overlay.height/2);
 
-    ctxOverlay.font = "20px Arial";
-    ctxOverlay.fillText("Clique sur 'Recommencer' pour rejouer", overlay.width/2, overlay.height/2 + 40);
+  ctxOverlay.font = "20px Arial";
+  ctxOverlay.fillText("Clique sur 'Recommencer' pour rejouer", overlay.width/2, overlay.height/2 + 40);
+}
 
-    ctxOverlay.textAlign = "left";
-  }
 
   // start
   reset();
