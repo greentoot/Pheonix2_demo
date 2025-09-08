@@ -1,7 +1,12 @@
 (async function(){
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+  canvas.width = canvas.parentElement.clientWidth;
+  canvas.height = canvas.parentElement.clientHeight;
+
+  let W = canvas.width;
+  let H = canvas.height;
+
 
   // --- UI Elements ---
   const scoreEl = document.getElementById('score'); //valid
@@ -255,4 +260,14 @@
   // start
   reset();
   requestAnimationFrame(loop);
+  function resizeCanvas() {
+  canvas.width = canvas.parentElement.clientWidth;
+  canvas.height = canvas.parentElement.clientHeight;
+  W = canvas.width;
+  H = canvas.height;
+}
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas(); // appel initial
+
 })();
