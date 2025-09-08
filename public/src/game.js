@@ -7,17 +7,6 @@
   let W = canvas.width;
   let H = canvas.height;
 
-  // --- Overlay ---
-  const overlay = document.getElementById('overlay');
-  const ctxOverlay = overlay.getContext('2d');
-
-  function resizeOverlay() {
-    overlay.width = canvas.width;
-    overlay.height = canvas.height;
-  }
-  window.addEventListener("resize", resizeOverlay);
-  resizeOverlay();
-
   // --- UI Elements ---
   const scoreEl = document.getElementById('score');
   const projectilesEl = document.getElementById('projectiles');
@@ -53,7 +42,7 @@
   // --- Game state ---
   let running = true;
   let score = 0;
-  let lives = 3; // max 3 vies
+  let lives = 1;
 
   let currentWave = 1;
   const maxWaves = 10;
@@ -82,13 +71,12 @@
 
   // --- Reset game ---
   function reset(){
-    score = 0; lives = 3;
+    score = 0; lives = 1;
     bullets.length = 0; enemies.length = 0; enemyBullets.length = 0;
     player.x = W/2; player.y = H-80; player.fireCooldown = 0;
     running = true;
     currentWave = 1;
     spawnWave(currentWave);
-    clearOverlay();
   }
 
   function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
@@ -124,7 +112,11 @@
 
   // --- Game loop ---
   let last = performance.now();
-function loop(ts){ const dt = Math.min(0.033, (ts-last)/1000); last = ts; if(running){ update(dt); draw(); } requestAnimationFrame(loop); }
+  function loop(ts){
+    const dt = Math.min(0.033, (ts-last)/1000); last = ts;
+    if(running){ update(dt); draw(); }
+    requestAnimationFrame(loop);
+  }
 
   function update(dt){
     player.x = clamp(player.x, 24, W-24);
@@ -257,31 +249,6 @@ function loop(ts){ const dt = Math.min(0.033, (ts-last)/1000); last = ts; if(run
     }
   }
 
-  // --- Overlay uniquement Game Over ---
-  function clearOverlay() {
-    ctxOverlay.clearRect(0, 0, overlay.width, overlay.height);
-  }
-
-function drawOverlay() {
-  ctxOverlay.clearRect(0, 0, overlay.width, overlay.height);
-
-  ctxOverlay.fillStyle = "rgba(0,0,0,0.7)";
-  ctxOverlay.fillRect(0, 0, overlay.width, overlay.height);
-
-  ctxOverlay.fillStyle = "red";
-  ctxOverlay.font = "40px Arial";
-  ctxOverlay.textAlign = "center";
-  ctxOverlay.fillText("GAME OVER", overlay.width/2, overlay.height/2 - 40);
-
-  ctxOverlay.fillStyle = "white";
-  ctxOverlay.font = "24px Arial";
-  ctxOverlay.fillText("Score final : " + score, overlay.width/2, overlay.height/2);
-
-  ctxOverlay.font = "20px Arial";
-  ctxOverlay.fillText("Clique sur 'Recommencer' pour rejouer", overlay.width/2, overlay.height/2 + 40);
-}
-
-
   // start
   reset();
   requestAnimationFrame(loop);
@@ -290,7 +257,6 @@ function drawOverlay() {
     canvas.height = canvas.parentElement.clientHeight;
     W = canvas.width;
     H = canvas.height;
-    resizeOverlay();
   }
   window.addEventListener("resize", resizeCanvas);
   resizeCanvas();
